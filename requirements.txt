@@ -7,3 +7,5 @@ scikit-learn
 xgboost
 lightgbm
 networkx
+pyfpgrowth
+pyts

@@ -9,9 +9,11 @@ origin data from xblock.pro
 
 # Experiments
 1. trans2vec -> notebook/random_walk_classification.ipynb
-2. shapelets -> motifs_mining_timeseries.ipynb
-3. graphlets -> motifs_mining_topo.ipynb
-4. translets -> translets_mining.ipynb
+2. gcn -> notebook/gcn_classification.ipynb
+3. graph2vec -> notebook/graph2vec_classification.ipynb
+4. shapelets -> motifs_mining_timeseries.ipynb
+5. graphlets -> motifs_mining_topo.ipynb
+6. translets -> translets_mining.ipynb
 
 
 # env requirements(windows)
