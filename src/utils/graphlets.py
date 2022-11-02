@@ -38,7 +38,7 @@ def generate_walks(G, num_walks, walk_length, restart_prob):
 
 
 # 提取以太坊交易图的graphlets
-def extract_graphlets(node_graphs, num_walks, walk_length, restart_prob):
+def extract_graphlets(node_graphs, num_walks, walk_length, restart_prob, label):
     motifs = {
     'motif1': nx.DiGraph([(0, 1), (1, 2)]),
     'motif2': nx.DiGraph([(0, 1), (2, 1)]),
@@ -50,11 +50,11 @@ def extract_graphlets(node_graphs, num_walks, walk_length, restart_prob):
 
     # 从node_graphs中提取motifs特征, 统计motifs的数量
     
-    length = len(walks)
+    length = len(node_graphs)
     index = 0
 
     for key in node_graphs.keys():
-        print("Process: {}, {}/{}".format(key, index, length))
+        print("Process(shapelets): {}, {}/{}".format(key, index, length), end='\r')
         index += 1
         # 提取motifs特征
         motif_features[key] = {}
@@ -99,5 +99,30 @@ def extract_graphlets(node_graphs, num_walks, walk_length, restart_prob):
     # 将motif_features转化为df
     motif_features = pd.DataFrame(motif_features)
     motif_features = motif_features.T
+    motif_features = motif_features.fillna(0)
+    # print(motif_features.head())
+    # 将index转化为address列
+    motif_features['address'] = motif_features.index
+    motif_features = motif_features.reset_index(drop=True)
+
+    # 将address放到第一列
+    cols = list(motif_features.columns)
+    cols = [cols[-1]] + cols[:-1]
+    motif_features = motif_features[cols]
+
+    # 计算motif特征的比例
+    motif_features['motif1_ratio'] = motif_features['motif1'] / (motif_features['motif1'] + motif_features['motif2'] + motif_features['motif3'])
+    motif_features['motif2_ratio'] = motif_features['motif2'] / (motif_features['motif1'] + motif_features['motif2'] + motif_features['motif3'])
+    motif_features['motif3_ratio'] = motif_features['motif3'] / (motif_features['motif1'] + motif_features['motif2'] + motif_features['motif3'])
+
+    motif_features['motif1_00_ratio'] = motif_features['motif1_00'] / motif_features['motif1']
+    motif_features['motif1_01_ratio'] = motif_features['motif1_01'] / motif_features['motif1']
+    motif_features['motif1_10_ratio'] = motif_features['motif1_10'] / motif_features['motif1']
+    motif_features['motif1_11_ratio'] = motif_features['motif1_11'] / motif_features['motif1']
+
+    # 将label添加到motif_features中
+    motif_features['label'] = label
+
+    print()
 
     return motif_features

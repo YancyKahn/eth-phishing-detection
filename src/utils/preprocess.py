@@ -12,7 +12,7 @@ warnings.filterwarnings('ignore')
 def load_data_1d(path_data_folder_1d, label, isetherscan=False, timeseries_len=50, columns_key = {'timeStamp': 'TimeStamp', 'value': 'Value', 'from': 'From', 'to': 'To'}):
     node_features = pd.DataFrame()
     node_graphs = {}
-    node_txs = {}
+    node_tx_timeseries = pd.DataFrame()
 
     index = 0
     len_files = len(os.listdir(path_data_folder_1d))
@@ -27,7 +27,7 @@ def load_data_1d(path_data_folder_1d, label, isetherscan=False, timeseries_len=5
             except:
                 continue
 
-            if len(df) < 5:
+            if len(df) < 5 or len(df) > 2000:
                 continue
             
             # rename columns
@@ -70,22 +70,43 @@ def load_data_1d(path_data_folder_1d, label, isetherscan=False, timeseries_len=5
             node_features = node_features.append(features, ignore_index = True)
 
             # 3. 预处理的节点交易, 长度为timeseries_len
-            node_txs[filename.split('.')[0]] = df
-    
-    return node_features, node_graphs
+            df.loc[df['From'] == filename.split('.')[0], 'Value'] = -df['Value']
+            df['Balance'] = df['Value'].cumsum()
+
+            values = df['Balance'].values
+            if len(values) < timeseries_len:
+                values = np.pad(values, (0, timeseries_len - len(values)), 'constant', constant_values = values[-1])
+            else:
+                values = values[-timeseries_len:]
+            
+            # 第一列为地址，最后一列为标签
+            values = values.tolist()
+            values.insert(0, filename.split('.')[0])
+            values.append(label)
+            # print(values)
+
+            columns  = ['balance_{}'.format(i) for i in range(timeseries_len)]
+            columns = ['address'] + columns + ['label']
+            
+            node_tx_timeseries = node_tx_timeseries.append(pd.DataFrame([values], columns = columns), ignore_index = True)
+
+    node_tx_timeseries.fillna(0, inplace = True)
+    print()
+
+    return node_features, node_graphs, node_tx_timeseries
 
 
 def test():
     # 钓鱼数据
     path_phishing_data_folder_1d = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\original_data\etherscan\1d\phish-hack'
-    phishing_node_features, phishing_node_graphs = load_data_1d(path_phishing_data_folder_1d, 0, isetherscan=True)
+    phishing_node_features, phishing_node_graphs, phishing_node_tx = load_data_1d(path_phishing_data_folder_1d, 0, isetherscan=True)
     print()
-    print(phishing_node_features.shape, len(phishing_node_graphs))
+    print(phishing_node_features.shape, len(phishing_node_graphs), phishing_node_tx.shape)
     # 正常数据
     path_normal_data_folder_1d = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\original_data\open\非钓鱼一阶节点'
-    normal_node_features, normal_node_graphs = load_data_1d(path_normal_data_folder_1d, 1, isetherscan=False)
+    normal_node_features, normal_node_graphs, normal_node_tx = load_data_1d(path_normal_data_folder_1d, 1, isetherscan=False)
     print()
-    print(normal_node_features.shape, len(normal_node_graphs))
+    print(normal_node_features.shape, len(normal_node_graphs), normal_node_tx.shape)
 
     # 合并数据
     node_features = pd.concat([phishing_node_features, normal_node_features], axis = 0)
