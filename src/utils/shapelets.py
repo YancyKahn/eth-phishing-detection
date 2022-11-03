@@ -4,8 +4,6 @@ import pandas as pd
 
 # 提取shapelets特征
 def extract_shapelets(node_txs, min_len, max_len, num_shapelets):
-    # 提取shapelets特征
-    shapelet_features = {}
 
     X = node_txs.iloc[:, 1:-1]
     y = node_txs.iloc[:, -1]
@@ -20,11 +18,24 @@ def extract_shapelets(node_txs, min_len, max_len, num_shapelets):
     # 提取特征
     X_transformed = st.transform(X)
     shapelets_features = pd.DataFrame(X_transformed)
+    # 重新进行索引
+    shapelets_features.index = node_txs.index
+
+    # 保存shapelets
+    shapelets = pd.DataFrame(shapelets)
+    shapelets.to_csv(r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\shapelets.csv', index=False)
+
+    # 保存shapelets特征
+    shapelets_features.to_csv(r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\shapelets_features.csv', index=False)
+
     shapelets_features['label'] = node_txs['label']
     shapelets_features['address'] = node_txs['address']
 
+    # address放到第一列
     cols = shapelets_features.columns.tolist()
     cols = cols[-1:] + cols[:-1]
     shapelets_features = shapelets_features[cols]
+
+    print(shapelets_features.tail())
 
     return shapelets_features, shapelets

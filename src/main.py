@@ -3,6 +3,8 @@ import utils.preprocess as preprocess
 import utils.graphlets as graphlets
 import utils.shapelets as shapelets
 import pickle
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 
 def process(isNotPreprocess=False):
     # 1. load data
@@ -55,14 +57,14 @@ def process(isNotPreprocess=False):
             normal_node_graphs = pickle.load(f)
         print("load base data done.")
     
-    print("*"*20)
+    print("*"*40)
 
     # 3. merge phishing and normal
     print("merge phishing and normal...")
     node_features = pd.concat([phishing_node_features, normal_node_features], axis=0)
     node_tx = pd.concat([phishing_node_tx, normal_node_tx], axis=0)
 
-    print("*"*20)
+    print("*"*40)
 
     # 4. extract graphlet features
     print("extract graphlet features...")
@@ -71,27 +73,45 @@ def process(isNotPreprocess=False):
     # 4.1 merge phishing and normal
     graphlet_features = pd.concat([phishing_graphlet_features, normal_graphlet_features], axis=0)
 
-    print("*"*20)
+    print("*"*40)
 
     # 5. extract shapelet features
     print("extract shapelet features...")
-    phishing_shapelet_features = shapelets.extract_shapelets(node_tx, 8, 10, 10)
+    phishing_shapelet_features, shapelets_vector = shapelets.extract_shapelets(node_tx, 8, 10, 10)
 
     # 6. merge features
     print("merge features...")
     # 按照address合并
-    features = pd.merge(node_features, graphlet_features, on='address', how='left')
+    features = pd.merge(node_features.drop('label', axis=1), graphlet_features.drop('label', axis=1), on='address', how='left')
     features = pd.merge(features, phishing_shapelet_features, on='address', how='left')
 
-    # 去除相同的列
-    features = features.loc[:,~features.columns.duplicated()]
-
-    print("*"*20)
+    print("*"*40)
 
     # 7. save features
     print("save features...")
     features.to_csv(base_save_path + r'\features.csv', index=False)
+    shapelets_vector.to_csv(base_save_path + r'\shapelets_vector.csv', index=False)
 
 
 if __name__ == '__main__':
-    process()
+    embedding = False
+    if embedding:
+        process()
+    else:
+        # 读取数据
+        data = pd.read_csv(r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\etherscan\features.csv')
+
+        # 划分数据集
+        X_train, X_test, y_train, y_test = train_test_split(data.drop(['label', 'address'], axis=1), data['label'], test_size=0.2, random_state=0)
+
+        # 训练模型
+        import xgboost
+        model = xgboost.XGBClassifier()
+
+        model.fit(X_train, y_train)
+
+        # 预测
+        y_pred = model.predict(X_test)
+
+        # 评估
+        print(classification_report(y_test, y_pred))

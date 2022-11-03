@@ -54,7 +54,7 @@ def extract_graphlets(node_graphs, num_walks, walk_length, restart_prob, label):
     index = 0
 
     for key in node_graphs.keys():
-        print("Process(shapelets): {}, {}/{}".format(key, index, length), end='\r')
+        print("Process(graphlets): {}, {}/{}".format(key, index, length), end='\r')
         index += 1
         # 提取motifs特征
         motif_features[key] = {}

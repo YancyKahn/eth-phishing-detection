@@ -9,3 +9,4 @@ lightgbm
 networkx
 pyfpgrowth
 pyts
+shap
