@@ -1,6 +1,7 @@
 # 提取时间序列的shapelet
+import pandas as pd
 from pyts.transformation import ShapeletTransform
-import pandas as pd 
+
 
 # 提取shapelets特征
 def extract_shapelets(node_txs, min_len, max_len, num_shapelets):
@@ -23,10 +24,10 @@ def extract_shapelets(node_txs, min_len, max_len, num_shapelets):
 
     # 保存shapelets
     shapelets = pd.DataFrame(shapelets)
-    shapelets.to_csv(r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\shapelets.csv', index=False)
+    shapelets.to_csv(r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\etherscan\ex_2\shapelets.csv', index=False)
 
     # 保存shapelets特征
-    shapelets_features.to_csv(r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\shapelets_features.csv', index=False)
+    shapelets_features.to_csv(r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\etherscan\ex_2\shapelets_features.csv', index=False)
 
     shapelets_features['label'] = node_txs['label']
     shapelets_features['address'] = node_txs['address']

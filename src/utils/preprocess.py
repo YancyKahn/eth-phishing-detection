@@ -1,10 +1,11 @@
 #预处理数据，将提取交易数据并清洗
 
-import pandas as pd 
-import numpy as np
 import os
 import warnings
-import networkx as nx 
+
+import networkx as nx
+import numpy as np
+import pandas as pd
 
 warnings.filterwarnings('ignore')
 
@@ -26,10 +27,15 @@ def load_data_1d(path_data_folder_1d, label, isetherscan=False, timeseries_len=5
                 df = pd.read_csv(os.path.join(path_data_folder_1d, filename))
             except:
                 continue
-
-            if len(df) < 5 or len(df) > 2000:
+            
+            # 交易数量大于0
+            if len(df) < 1:
                 continue
             
+            # 交易数量大于1000时取后1000条交易
+            if len(df) > 1000:
+                df = df.iloc[-1000:, :]
+
             # rename columns
             if 'TimeStamp' not in df.columns or 'Value' not in df.columns or 'From' not in df.columns or 'To' not in df.columns:
                 df = df.rename(columns = columns_key)

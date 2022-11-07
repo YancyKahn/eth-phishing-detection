@@ -26,6 +26,10 @@ def generate_walks(G, num_walks, walk_length, restart_prob):
     walks = []
     nodes = list(G.nodes())
 
+    if len(nodes) == 0:
+        return walks
+
+
     while len(walks) < num_walks:
         random.shuffle(nodes)
         random_start_node = random.choice(nodes)
