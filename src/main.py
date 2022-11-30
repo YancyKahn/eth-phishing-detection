@@ -15,6 +15,8 @@ path_data_normal2 = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\o
 base_save_path = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\etherscan'
 
 
+
+
 def process(dataset_saved_folder, dataset_flag, is_save_base, is_save_graphlets, is_save_shapelets, is_save_features, isNotPreprocess):
     save_floder = dataset_saved_folder + dataset_flag + '\\'
     
@@ -60,6 +62,12 @@ def process(dataset_saved_folder, dataset_flag, is_save_base, is_save_graphlets,
         phishing_node_tx = pd.read_csv(save_floder + 'phishing_node_tx.csv')
         normal_node_features = pd.read_csv(save_floder + 'normal_node_features.csv')
         normal_node_tx = pd.read_csv(save_floder + 'normal_node_tx.csv')
+
+        print("Number of Phishing: ", len(phishing_node_features))
+        print("Number of Normal: ", len(normal_node_features))
+
+        print("Number of Phishing Edges: ", len(phishing_node_tx))
+        print("Number of Normal Edges: ", len(normal_node_tx))
 
         with open(save_floder + 'phishing_node_graphs.pkl', 'rb') as f:
             phishing_node_graphs = pickle.load(f)
@@ -128,11 +136,11 @@ if __name__ == '__main__':
     dataset_saved_folder = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\etherscan\\'
     dataset_flag = 'ex_2'
 
-    is_save_base = True
-    is_save_graphlets = True
-    is_save_shapelets = True
-    is_save_features = True
-    is_not_preprocess = True
+    is_save_base = False
+    is_save_graphlets = False
+    is_save_shapelets = False
+    is_save_features = False
+    is_not_preprocess = False
 
 
     if not os.path.exists(dataset_saved_folder + dataset_flag):
