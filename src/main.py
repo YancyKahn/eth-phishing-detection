@@ -8,13 +8,11 @@ import utils.preprocess as preprocess
 import utils.shapelets as shapelets
 
 # 1. load data
-# phihsing data path and normal data path
+# phihsing data path and normal data path from ethscan
 path_data_phishing = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\original_data\etherscan\1d\phish-hack'
 path_data_normal = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\original_data\etherscan\1d\normal'
 path_data_normal2 = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\original_data\open\非钓鱼一阶节点'
 base_save_path = r'X:\Datasets\Blockchain\xblock.pro\eth-phishing-detection\datasets\etherscan'
-
-
 
 
 def process(dataset_saved_folder, dataset_flag, is_save_base, is_save_graphlets, is_save_shapelets, is_save_features, isNotPreprocess):
